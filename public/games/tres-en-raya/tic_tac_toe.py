@@ -4,6 +4,7 @@ class TicTacToe:
         self.board = [""] * 9
         self.turn = "X"
         self.winner = None
+        self.winning_line = None
         self.draw = False
 
     def move(self, cell):
@@ -13,15 +14,19 @@ class TicTacToe:
             return self.state()
         self.board[cell] = self.turn
         lines = [(0,1,2),(3,4,5),(6,7,8),(0,3,6),(1,4,7),(2,5,8),(0,4,8),(2,4,6)]
-        if any(all(self.board[i] == self.turn for i in line) for line in lines):
-            self.winner = self.turn
+        for line in lines:
+            if all(self.board[i] == self.turn for i in line):
+                self.winner = self.turn
+                self.winning_line = list(line)
+                break
         self.draw = not self.winner and all(self.board)
         if not self.winner and not self.draw:
             self.turn = "O" if self.turn == "X" else "X"
         return self.state()
 
     def state(self):
-        return {"board": self.board[:], "turn": self.turn, "winner": self.winner, "draw": bool(self.draw)}
+        return {"board": self.board[:], "turn": self.turn, "winner": self.winner,
+                "winning_line": self.winning_line, "draw": bool(self.draw)}
 
 if __name__ == "__main__":
     game = TicTacToe()

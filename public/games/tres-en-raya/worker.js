@@ -1,33 +1,57 @@
-let runtime;
-async function init(kind) {
- importScripts('https://cdn.jsdelivr.net/pyodide/v314.0.6/full/pyodide.js');
- runtime = await loadPyodide();
- const moduleName=kind==='tetris'?'tetris':'tic_tac_toe';
- const response=await fetch(moduleName+'.py');
- if(!response.ok) throw new Error('No se pudo cargar el juego');
- runtime.FS.writeFile(moduleName+'.py',await response.text());
- runtime.runPython('from '+moduleName+' import '+(kind==='tetris'?'Tetris':'TicTacToe')+'\nimport json\ngame = '+(kind==='tetris'?'Tetris':'TicTacToe')+'()');
- return JSON.parse(runtime.runPython('json.dumps(game.state())'));
+class TicTacToe {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.board = Array(9).fill('');
+    this.turn = 'X';
+    this.winner = null;
+    this.winningLine = null;
+    this.draw = false;
+  }
+  move(cell) {
+    if (!Number.isInteger(cell) || cell < 0 || cell > 8)
+      throw new Error('Casilla inválida');
+    if (this.winner || this.draw || this.board[cell]) return;
+    this.board[cell] = this.turn;
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    this.winningLine =
+      lines.find((line) =>
+        line.every((index) => this.board[index] === this.turn),
+      ) || null;
+    if (this.winningLine) this.winner = this.turn;
+    this.draw = !this.winner && this.board.every(Boolean);
+    if (!this.winner && !this.draw) this.turn = this.turn === 'X' ? 'O' : 'X';
+  }
+  state() {
+    return {
+      board: [...this.board],
+      turn: this.turn,
+      winner: this.winner,
+      winning_line: this.winningLine,
+      draw: this.draw,
+    };
+  }
 }
-let chain=Promise.resolve();
-self.onmessage=({data})=>{
- chain=chain.then(async()=>{
-  try{
-   let result;
-   if(data.type==='init') result=await init(data.kind);
-   else {
-    if(!runtime) throw new Error('Python no está preparado');
-    if(data.type==='reset') runtime.runPython('game = type(game)()');
-    else if(data.type==='move') {
-     if(!Number.isInteger(data.cell)||data.cell<0||data.cell>8) throw new Error('Casilla inválida');
-     runtime.globals.set('cell',data.cell);runtime.runPython('game.move(cell)');
-    } else if(data.type==='action'){
-     if(!['left','right','down','rotate','drop','tick','pause'].includes(data.action)) throw new Error('Acción inválida');
-     runtime.globals.set('action',data.action);runtime.runPython('game.action(action)');
-    } else if(data.type!=='state') throw new Error('Comando inválido');
-    result=JSON.parse(runtime.runPython('json.dumps(game.state())'));
-   }
-   self.postMessage({id:data.id,state:result});
-  }catch(e){self.postMessage({id:data.id,error:String(e.message||e)});}
- });
+
+let game;
+self.onmessage = ({ data }) => {
+  try {
+    if (data.type === 'init' || data.type === 'reset') game = new TicTacToe();
+    else if (!game) throw new Error('El juego no está preparado');
+    else if (data.type === 'move') game.move(data.cell);
+    else if (data.type !== 'state') throw new Error('Comando inválido');
+    self.postMessage({ id: data.id, state: game.state() });
+  } catch (error) {
+    self.postMessage({ id: data.id, error: String(error.message || error) });
+  }
 };

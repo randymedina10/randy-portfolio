@@ -1,41 +1,689 @@
 'use client';
-import {useState} from 'react';
-import {Tabs,TabsList,TabsTrigger,TabsContent} from '@/components/ui/tabs';
-import {Dialog,DialogContent,DialogTitle,DialogDescription,DialogClose} from '@/components/ui/dialog';
 
-const github='https://github.com/randymedina10/';
-const projects=[
- {tag:'BUSINESS INTELLIGENCE',tool:'POWER BI',title:'Las personas detrás de la rotación',desc:'Un análisis de recursos humanos para explorar bajas, satisfacción laboral y perfiles de empleados.',image:'power-bi.png',repo:'analisis-rrhh-power-bi',type:'Business Intelligence',metrics:['Power Query','DAX','RR. HH.'],detail:'Dashboard sobre datos de una empresa del sector farmacéutico en India. Explora rotación por departamento, salario, edad y rol. Power Query prepara los datos y DAX calcula los indicadores. Es un caso de portafolio: no se atribuyen ahorros ni impacto empresarial no medidos.'},
- {tag:'ANÁLISIS DE NEGOCIO',tool:'EXCEL',title:'Ventas que cuentan una historia',desc:'Ventas, ganancias, clientes y territorio reunidos en un dashboard para explorar el desempeño del negocio.',image:'excel.png',repo:'dashboard-ventas-excel',type:'Business Intelligence',metrics:['Tablas dinámicas','Segmentadores','Ventas'],detail:'El caso conecta tendencias mensuales, categorías, clientes rentables y ventas por estado. Usa tablas dinámicas, gráficos vinculados y segmentadores para navegar los resultados. El repositorio contiene el libro y la documentación original.'},
- {tag:'REGRESIÓN ESTADÍSTICA',tool:'R',title:'El peso de una buena explicación',desc:'¿Cómo se relacionan el peso y la potencia con el consumo de combustible? Regresión múltiple con mtcars.',image:'regression.png',repo:'regresion-estadistica-r',type:'Estadística',metrics:['32 automóviles','R² ajustado 0,815','RMSE LOO 2,78 mpg'],detail:'Modelo OLS: mpg ~ wt + hp. Incluye intervalos de confianza al 95%, residuos, observaciones influyentes y validación leave-one-out. El RMSE de 2,78 mpg mejora la referencia de la media (6,12 mpg). Datos históricos, muestra pequeña y no aleatoria: las asociaciones no son causales. Proyecto personal reproducible con R base.'},
- {tag:'MODELOS PREDICTIVOS',tool:'PYTHON',title:'De la química a la predicción',desc:'Comparación de modelos para identificar tres cultivares de vino a partir de sus mediciones químicas.',image:'prediction.png',repo:'modelos-predictivos-python',type:'Data Analytics',metrics:['178 muestras','13 variables','45/45 en prueba'],detail:'Wine de UCI. Entrenamiento: 133 muestras; prueba: 45, con separación estratificada y semilla 42. Compara baseline, regresión logística y random forest mediante CV de cinco particiones. Random forest ganó por F1 macro de CV (0,985) y obtuvo F1 macro 1,000 en prueba. Dataset pequeño y relativamente separable; no implica rendimiento industrial. Incluye particiones y predicciones para auditoría.'},
- {tag:'BASES DE DATOS',tool:'SQL SERVER',title:'Una base sólida para cada venta',desc:'Un sistema relacional que conecta clientes, productos, inventario y transacciones para consultar el negocio.',image:null,repo:'sistema-ventas-sql',type:'Data Systems',metrics:['Modelo relacional','JOIN','Agregaciones'],detail:'Esquema de ventas con claves foráneas, inventario por sucursal, pagos, compras y proveedores. Incluye datos de prueba y consultas de exploración, uniones y agregaciones. Es una base de práctica documentada; no se presenta como aplicación de producción.'}
-];
-const areas=[
- ['Estadística','Inferencia, indicadores y metodología para formular preguntas y analizar resultados.','01'],
- ['Data Analytics','Exploración y análisis con Python, R y SQL. Del dato al hallazgo.','02'],
- ['Data Systems','Bases de datos y proyectos de programación para organizar información y automatizar tareas.','03'],
- ['Business Intelligence','Power BI, Excel y reportes que hacen la información más fácil de usar.','04']
-];
-export default function Portfolio(){
- const [filter,setFilter]=useState('Todos');
- const [selected,setSelected]=useState<(typeof projects)[number]|null>(null);
- const [game,setGame]=useState('tres-en-raya');
- const [playing,setPlaying]=useState(false);
- return <>
- <a className="skip" href="#contenido">Saltar al contenido</a>
- <header className="nav"><a className="brand" href="#"><b>R<span>.</span></b> RANDY A. MEDINA</a><nav aria-label="Principal">{['Áreas','Proyectos','Juegos','Trayectoria','Educación','Contacto'].map((x,i)=><a key={x} href={'#'+['areas','proyectos','juegos','trayectoria','educacion','contacto'][i]}>{x}</a>)}<a className="pill" href={github}>GitHub ↗</a></nav></header>
- <main id="contenido"><section className="hero"><p className="eyebrow">ESTADÍSTICA · ANÁLISIS DE DATOS — SANTO DOMINGO, RD</p><h1>Datos que ayudan a<br/><em>entender y decidir.</em></h1><div className="hero-bottom"><p className="intro">Soy <strong>Randy A. Medina.</strong> Analista de datos y estudiante de Estadística. Trabajo con información del Sistema Estadístico Nacional: desde su levantamiento y preparación hasta el análisis y la comunicación de resultados.</p><a href="#proyectos" className="hero-link">Explorar mi trabajo <span>↓</span></a></div>
- <div className="facts">{[['ESTADÍSTICA','INFERENCIA · INDICADORES · METODOLOGÍA'],['DATA ANALYTICS','PYTHON · R · SQL'],['DATA SYSTEMS','AUTOMATIZACIÓN · BASES DE DATOS · APPS'],['BUSINESS INTELLIGENCE','POWER BI · DASHBOARDS · REPORTES']].map(([a,b])=><div key={a}><b>{a}</b><span>{b}</span></div>)}</div></section>
- <section id="areas" className="section"><p className="eyebrow">01 / ENFOQUE</p><div className="section-heading"><h2>La pregunta primero.<br/><em>Las herramientas después.</em></h2><p>Me interesa entender qué hay detrás de los números, trabajar con cuidado y explicar lo que los datos permiten decir.</p></div><div className="areas">{areas.map(([name,desc,num])=><button key={name} className="area" onClick={()=>{setFilter(name);document.getElementById('proyectos')?.scrollIntoView({behavior:'smooth'});}}><span className="number">{num}</span><h3>{name}</h3><p>{desc}</p><span className="text-link">Explorar proyectos ↗</span></button>)}</div></section>
- <section id="proyectos" className="section"><p className="eyebrow">02 / TRABAJO</p><div className="section-heading"><h2>Preguntas concretas.<br/><em>Proyectos abiertos.</em></h2><p>Análisis, visualizaciones y código. Cada caso tiene su propio repositorio para revisar el proceso, los datos y los resultados.</p></div><div className="filters" aria-label="Filtrar proyectos">{['Todos',...areas.map(a=>a[0])].map(x=><button key={x} aria-pressed={filter===x} className={filter===x?'active':''} onClick={()=>setFilter(x)}>{x}</button>)}</div><div className="projects">{projects.filter(p=>filter==='Todos'||p.type===filter).map((p)=><article className="project" key={p.repo}><button className="project-visual" onClick={()=>setSelected(p)} aria-label={'Ver caso: '+p.title}>{p.image?<img src={'/images/'+p.image} alt={'Visualización del proyecto '+p.title} loading="lazy" width="1500" height="950"/>:<div className="sql-preview"><span>VENTAS / ESQUEMA RELACIONAL</span><code>SELECT<br/>&nbsp; cliente, producto,<br/>&nbsp; SUM(total) AS ventas<br/>FROM decisiones<br/><i>GROUP BY lo_que_importa;</i></code><small>Representación conceptual del proyecto</small></div>}</button><div className="project-copy"><p className="eyebrow">{p.tag} <span>/ {p.tool}</span></p><h3>{p.title}</h3><p>{p.desc}</p><div className="metrics">{p.metrics.map(m=><span key={m}>{m}</span>)}</div><div className="project-links"><button className="text-link" onClick={()=>setSelected(p)}>Ver caso completo ↗</button><a href={github+p.repo} target="_blank" rel="noreferrer">Repositorio ↗</a></div></div></article>)}</div></section>
- <section id="juegos" className="section games-section"><p className="eyebrow">03 / LABORATORIO</p><div className="section-heading"><h2>También se aprende<br/><em>jugando.</em></h2><p>Dos proyectos personales en Python para practicar lógica, estados y reglas. Haz una pausa y prueba una partida.</p></div><Tabs value={game} onValueChange={v=>{setGame(String(v));setPlaying(false);}}><TabsList className="game-tabs"><TabsTrigger value="tres-en-raya">Tres en raya</TabsTrigger><TabsTrigger value="tetris">Tetris</TabsTrigger></TabsList>{['tres-en-raya','tetris'].map(g=><TabsContent key={g} value={g}><div className="game-layout"><div className="game-description"><p className="eyebrow">PYTHON / PROYECTO PERSONAL</p><h3>{g==='tetris'?'Orden dentro del caos.':'Tres casillas. Una estrategia.'}</h3><p>{g==='tetris'?'Siete piezas, líneas que desaparecen y una partida que acelera. Mueve, gira y encaja cada bloque.':'Dos jugadores en el mismo dispositivo. Alterna X y O para completar una fila, columna o diagonal.'}</p><a className="text-link" href={github+(g==='tetris'?'tetris-python':'tres-en-raya-python')} target="_blank" rel="noreferrer">Ver código en GitHub ↗</a><div className="game-notes">{g==='tetris'?'Flechas: mover y girar · Espacio: caída rápida · P: pausa. También hay controles táctiles.':'Elige una casilla para jugar. El tablero detecta victoria y empate.'}</div></div><div className="game-stage">{playing?<iframe title={g==='tetris'?'Jugar Tetris en Python':'Jugar tres en raya en Python'} src={'/games/'+g+'/index.html'} className={g==='tetris'?'tetris-frame':'ttt-frame'}/>:<div className="game-start"><span className="game-symbol" aria-hidden="true">{g==='tetris'?'▟':'× ○'}</span><button className="primary" onClick={()=>setPlaying(true)}>Jugar {g==='tetris'?'Tetris':'tres en raya'}</button><small>La primera carga de Python puede tardar unos segundos.</small></div>}</div></div></TabsContent>)}</Tabs></section>
- <section id="trayectoria" className="section"><p className="eyebrow">04 / RECORRIDO</p><div className="section-heading"><h2>Datos con<br/><em>responsabilidad.</em></h2><p>Precisión en el análisis, ética en el manejo de la información y claridad al compartir resultados.</p></div><div className="timeline"><div className="date">MAR 2025 — PRESENTE</div><div><p className="eyebrow">OFICINA NACIONAL DE ESTADÍSTICA</p><h3>Técnico de levantamiento y análisis de operaciones estadísticas</h3><p>Levantamiento, actualización y monitoreo de operaciones estadísticas y registros administrativos de las instituciones del SEN.</p><ul><li>Seguimiento y actualización de indicadores de los Objetivos de Desarrollo Sostenible.</li><li>Preparación y limpieza de bases de datos en Excel; creación de dashboards e informes.</li><li>Elaboración de manuales metodológicos y análisis de consistencia de indicadores para PNPSP, ODS, PEN y END.</li></ul></div></div></section>
- <section id="educacion" className="section"><p className="eyebrow">05 / FORMACIÓN</p><div className="section-heading"><h2>Una base estadística.<br/><em>Aprendizaje continuo.</em></h2></div><div className="education-main"><span className="date">AGO 2022 — PRESENTE</span><div><span className="badge">EN CURSO</span><h3>Licenciatura en Estadística<br/>Mención Socioeconómica</h3><p>Universidad Autónoma de Santo Domingo (UASD)</p><p>Estadística descriptiva e inferencial, probabilidad y modelos de regresión.</p></div></div><div className="courses">{[['Power BI','Universidad Dominico Americano'],['Excel: Power Pivot, DAX y Power Query','Udemy'],['Introducción a las bases de datos','Instituto Tecnológico de Las Américas (ITLA)'],['Ciencia de Datos para la Explotación de Datos','Escuela Nacional de Estadística · ONE']].map(([a,b])=><div key={a}><h3>{a}</h3><p>{b}</p></div>)}</div></section>
- <section className="section" id="herramientas"><p className="eyebrow">06 / HERRAMIENTAS</p><h2>Una caja de herramientas<br/><em>que sigue creciendo.</em></h2><div className="stack">{[['Power BI','Modelado · visualización · DAX'],['Excel','Power Query · Power Pivot'],['SQL','Consultas · relaciones · agregaciones'],['Python','Proyectos personales · modelos · juegos'],['R','Regresión · probabilidad · nivel básico'],['Stata','Regresión y correlación · nivel básico'],['REDATAM','Manejo básico en la ONE'],['CSPro','Formación en Udemy']].map(([a,b])=><div key={a}><h3>{a}</h3><p>{b}</p></div>)}</div><p className="personal">Fuera de los datos: lectura, ajedrez y stand up. Curiosidad, estrategia y otra forma de contar historias.</p></section>
- <section id="contacto" className="section contact"><p className="eyebrow">07 / CONVERSEMOS</p><h2>La próxima buena pregunta<br/><em>puede empezar aquí.</em></h2><div className="contact-links"><a href="mailto:randymedinaa5@gmail.com"><span>EMAIL</span>randymedinaa5@gmail.com ↗</a><a href={github}><span>GITHUB</span>randymedina10 ↗</a><div><span>UBICACIÓN</span>Santo Domingo, República Dominicana</div></div></section>
- </main><footer><span>RANDY A. MEDINA · ANALISTA DE DATOS</span><span>© 2026 · CURIOSIDAD CON MÉTODO</span></footer>
- <Dialog open={!!selected} onOpenChange={o=>{if(!o)setSelected(null);}}><DialogContent className="case-modal" showCloseButton={false}>{selected&&<><DialogTitle className="case-title">{selected.title}</DialogTitle><DialogDescription className="case-description">{selected.detail}</DialogDescription>{selected.image&&<img src={'/images/'+selected.image} alt={'Resultados de '+selected.title}/>}<div className="project-links"><a className="text-link" href={github+selected.repo} target="_blank" rel="noreferrer">Explorar repositorio ↗</a><DialogClose className="pill">Cerrar</DialogClose></div></>}</DialogContent></Dialog>
- </>;
+import { useEffect, useState, type CSSProperties } from 'react';
+import { ArrowUp, Mail, Phone } from 'lucide-react';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  areas,
+  capabilities,
+  github,
+  linkedin,
+  navItems,
+  processSteps,
+  projects,
+} from './portfolio-data';
+
+type Project = (typeof projects)[number];
+
+function SectionHeading({
+  children,
+  description,
+}: {
+  children: React.ReactNode;
+  description: string;
+}) {
+  return (
+    <div className="section-heading" data-reveal>
+      <h2>{children}</h2>
+      <p>{description}</p>
+    </div>
+  );
 }
 
+function SocialIcon({
+  type,
+}: {
+  type: 'github' | 'linkedin' | 'mail' | 'phone';
+}) {
+  if (type === 'github')
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="currentColor"
+      >
+        <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.3c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.4 11.4 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+      </svg>
+    );
+  if (type === 'linkedin')
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        width="18"
+        height="18"
+        fill="currentColor"
+      >
+        <path d="M20.5 3H3.5A.5.5 0 0 0 3 3.5v17a.5.5 0 0 0 .5.5h17a.5.5 0 0 0 .5-.5v-17a.5.5 0 0 0-.5-.5ZM8.3 18H5.7V9.7h2.6V18ZM7 8.6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM18.3 18h-2.6v-4c0-1 0-2.2-1.4-2.2s-1.6 1-1.6 2.2v4h-2.6V9.7h2.5v1.1h.1c.3-.7 1.2-1.4 2.5-1.4 2.6 0 3.1 1.7 3.1 4V18Z" />
+      </svg>
+    );
+  const Icon = type === 'mail' ? Mail : Phone;
+  return <Icon aria-hidden="true" size={18} strokeWidth={1.8} />;
+}
+
+function ProjectCard({
+  project,
+  index,
+  onSelect,
+}: {
+  project: Project;
+  index: number;
+  onSelect: (project: Project) => void;
+}) {
+  return (
+    <article
+      className="project"
+      data-reveal
+      style={{ '--delay': `${(index % 2) * 90}ms` } as CSSProperties}
+    >
+      <button
+        className="project-visual"
+        onClick={() => onSelect(project)}
+        aria-label={'Ver caso: ' + project.title}
+      >
+        {project.image ? (
+          // oxlint-disable-next-line next/no-img-element -- Static export uses local, dimensioned portfolio captures.
+          <img
+            src={'/images/' + project.image}
+            alt={'Visualización del proyecto ' + project.title}
+            loading="lazy"
+            width="1500"
+            height="950"
+          />
+        ) : (
+          <div className="sql-preview">
+            <span>VENTAS / ESQUEMA RELACIONAL</span>
+            <code>
+              SELECT
+              <br />
+              &nbsp; cliente, producto,
+              <br />
+              &nbsp; SUM(total) AS ventas
+              <br />
+              FROM decisiones
+              <br />
+              <i>GROUP BY lo_que_importa;</i>
+            </code>
+            <small>Representación conceptual del proyecto</small>
+          </div>
+        )}
+      </button>
+      <div className="project-copy">
+        <p className="eyebrow">
+          {project.tag} <span>/ {project.tool}</span>
+        </p>
+        <span className="project-status">{project.status}</span>
+        <h3>{project.title}</h3>
+        <p>{project.desc}</p>
+        <div className="metrics">
+          {project.metrics.map((metric) => (
+            <span key={metric}>{metric}</span>
+          ))}
+        </div>
+        <div className="project-links">
+          <button className="text-link" onClick={() => onSelect(project)}>
+            Ver caso completo <i aria-hidden="true">↗</i>
+          </button>
+          <a
+            href={github + project.repo}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={'Abrir repositorio de ' + project.title}
+          >
+            Repositorio <i aria-hidden="true">↗</i>
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+export default function Portfolio() {
+  const [filter, setFilter] = useState('Todos');
+  const [selected, setSelected] = useState<Project | null>(null);
+  const [game, setGame] = useState('tres-en-raya');
+  const [playing, setPlaying] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const revealItems = [
+      ...document.querySelectorAll<HTMLElement>('[data-reveal]'),
+    ];
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+    let revealObserver: IntersectionObserver | undefined;
+    if (reducedMotion || !('IntersectionObserver' in window))
+      revealItems.forEach((item) => item.classList.add('is-visible'));
+    else {
+      revealObserver = new IntersectionObserver(
+        (entries, observer) =>
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target);
+            }
+          }),
+        { threshold: 0.12 },
+      );
+      revealItems.forEach((item) => revealObserver?.observe(item));
+    }
+
+    const sections = navItems
+      .map(([, id]) => document.getElementById(id))
+      .filter((item): item is HTMLElement => Boolean(item));
+    const sectionObserver = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveSection(visible.target.id);
+      },
+      { rootMargin: '-25% 0px -55% 0px', threshold: [0.05, 0.25, 0.5] },
+    );
+    sections.forEach((section) => sectionObserver.observe(section));
+    const onScroll = () =>
+      setShowTop(window.scrollY > window.innerHeight * 1.5);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      revealObserver?.disconnect();
+      sectionObserver.disconnect();
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+
+  const filteredProjects = projects.filter(
+    (project) => filter === 'Todos' || project.type === filter,
+  );
+  return (
+    <>
+      <a className="skip" href="#contenido">
+        Saltar al contenido
+      </a>
+      <header className="nav">
+        <a className="brand" href="#contenido" aria-label="Ir al inicio">
+          <b aria-hidden="true">
+            R<span>.</span>
+          </b>
+          <span className="brand-copy">
+            <strong>Randy A. Medina</strong>
+            <small>Analista de Datos</small>
+          </span>
+        </a>
+        <nav aria-label="Principal">
+          {navItems.map(([label, id]) => (
+            <a
+              key={id}
+              href={'#' + id}
+              aria-current={activeSection === id ? 'location' : undefined}
+            >
+              {label}
+            </a>
+          ))}
+          <a
+            className="pill github-link"
+            href={github}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Ver GitHub de Randy Medina"
+          >
+            <SocialIcon type="github" /> GitHub <i aria-hidden="true">↗</i>
+          </a>
+        </nav>
+      </header>
+
+      <main id="contenido">
+        <section className="hero" aria-labelledby="hero-title">
+          <p className="eyebrow" data-reveal>
+            ESTADÍSTICA · ANÁLISIS DE DATOS — SANTO DOMINGO, RD
+          </p>
+          <h1 id="hero-title" data-reveal>
+            Datos que ayudan a<br />
+            <em>entender y decidir.</em>
+          </h1>
+          <div className="hero-bottom" data-reveal>
+            <p className="intro">
+              Soy <strong>Randy A. Medina.</strong> Analista de datos y
+              estudiante de Estadística. Trabajo con información del Sistema
+              Estadístico Nacional: desde su levantamiento y preparación hasta
+              el análisis y la comunicación de resultados.
+            </p>
+            <a href="#proyectos" className="hero-link">
+              Explorar mi trabajo <span aria-hidden="true">↓</span>
+            </a>
+          </div>
+          <div className="process" aria-label="Proceso de trabajo">
+            {processSteps.map(([number, name, actions], index) => (
+              <div
+                className="process-step"
+                data-reveal
+                style={{ '--delay': `${index * 90}ms` } as CSSProperties}
+                key={number}
+              >
+                <span className="process-number">{number}</span>
+                <b>{name}</b>
+                <span>{actions}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="areas" className="section">
+          <p className="eyebrow" data-reveal>
+            01 / ÁREAS DE ENFOQUE
+          </p>
+          <SectionHeading description="Me interesa entender qué hay detrás de los números, trabajar con cuidado y explicar lo que los datos permiten decir.">
+            La pregunta primero.
+            <br />
+            <em>Las herramientas después.</em>
+          </SectionHeading>
+          <div className="areas">
+            {areas.map(([name, desc, num], index) => (
+              <button
+                key={name}
+                className="area"
+                data-reveal
+                style={{ '--delay': `${index * 70}ms` } as CSSProperties}
+                onClick={() => {
+                  setFilter(name);
+                  document
+                    .getElementById('proyectos')
+                    ?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                <span className="number">{num}</span>
+                <h3>{name}</h3>
+                <p>{desc}</p>
+                <span className="text-link">
+                  Explorar proyectos <i aria-hidden="true">↗</i>
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section id="proyectos" className="section section-landmark">
+          <p className="eyebrow" data-reveal>
+            02 / TRABAJO
+          </p>
+          <SectionHeading description="Análisis, visualizaciones y código. Cada caso permite revisar el problema, los datos, el método y el resultado.">
+            Preguntas concretas.
+            <br />
+            <em>Proyectos abiertos.</em>
+          </SectionHeading>
+          <div className="filters" aria-label="Filtrar proyectos" data-reveal>
+            {['Todos', ...areas.map((area) => area[0])].map((name) => (
+              <button
+                key={name}
+                aria-pressed={filter === name}
+                className={filter === name ? 'active' : ''}
+                onClick={() => setFilter(name)}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+          <div className="projects">
+            {filteredProjects.map((project, index) => (
+              <ProjectCard
+                project={project}
+                index={index}
+                onSelect={setSelected}
+                key={project.repo}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section id="juegos" className="section games-section">
+          <p className="eyebrow" data-reveal>
+            03 / LABORATORIO
+          </p>
+          <SectionHeading description="Dos motores diseñados en Python y adaptados a JavaScript para jugar directamente en el navegador.">
+            También se aprende
+            <br />
+            <em>jugando.</em>
+          </SectionHeading>
+          <div data-reveal>
+            <Tabs
+              className="portfolio-tabs"
+              value={game}
+              onValueChange={(value) => {
+                setGame(String(value));
+                setPlaying(false);
+              }}
+            >
+              <TabsList className="game-tabs">
+                <TabsTrigger value="tres-en-raya">Tres en raya</TabsTrigger>
+                <TabsTrigger value="tetris">Tetris</TabsTrigger>
+              </TabsList>
+              {['tres-en-raya', 'tetris'].map((currentGame) => (
+                <TabsContent key={currentGame} value={currentGame}>
+                  <div className="game-layout">
+                    <div className="game-description">
+                      <p className="eyebrow">
+                        PYTHON · JAVASCRIPT / PROYECTO PERSONAL
+                      </p>
+                      <h3>
+                        {currentGame === 'tetris'
+                          ? 'Orden dentro del caos.'
+                          : 'Tres casillas. Una estrategia.'}
+                      </h3>
+                      <p>
+                        {currentGame === 'tetris'
+                          ? 'Siete piezas, líneas que desaparecen y una partida que acelera. Mueve, gira y encaja cada bloque.'
+                          : 'Dos jugadores en el mismo dispositivo. Alterna X y O para completar una fila, columna o diagonal.'}
+                      </p>
+                      <a
+                        className="text-link"
+                        href={
+                          github +
+                          (currentGame === 'tetris'
+                            ? 'tetris-python'
+                            : 'tres-en-raya-python')
+                        }
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Ver código en GitHub <i aria-hidden="true">↗</i>
+                      </a>
+                      <div className="game-notes">
+                        {currentGame === 'tetris'
+                          ? 'Teclado: flechas para mover y girar · espacio para caída rápida · P para pausar. Controles táctiles incluidos.'
+                          : 'El tablero alterna turnos, detecta las ocho combinaciones ganadoras y los empates, y se bloquea al terminar.'}
+                      </div>
+                    </div>
+                    <div className="game-stage">
+                      {playing && currentGame === game ? (
+                        <iframe
+                          title={
+                            currentGame === 'tetris'
+                              ? 'Jugar Tetris'
+                              : 'Jugar tres en raya'
+                          }
+                          src={'/games/' + currentGame + '/index.html'}
+                          className={
+                            currentGame === 'tetris'
+                              ? 'tetris-frame'
+                              : 'ttt-frame'
+                          }
+                        />
+                      ) : (
+                        <div className="game-start">
+                          <span className="game-symbol" aria-hidden="true">
+                            {currentGame === 'tetris' ? '▟' : '× ○'}
+                          </span>
+                          <button
+                            className="primary"
+                            onClick={() => setPlaying(true)}
+                          >
+                            Jugar{' '}
+                            {currentGame === 'tetris'
+                              ? 'Tetris'
+                              : 'tres en raya'}
+                          </button>
+                          <small>
+                            El juego se ejecuta localmente en tu navegador.
+                          </small>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
+          </div>
+        </section>
+
+        <section id="trayectoria" className="section">
+          <p className="eyebrow" data-reveal>
+            04 / TRAYECTORIA LABORAL
+          </p>
+          <SectionHeading description="Precisión en el análisis, ética en el manejo de la información y claridad al compartir resultados.">
+            Datos con
+            <br />
+            <em>responsabilidad.</em>
+          </SectionHeading>
+          <div className="timeline" data-reveal>
+            <div className="date">MAR 2025 — PRESENTE</div>
+            <div>
+              <p className="eyebrow">OFICINA NACIONAL DE ESTADÍSTICA</p>
+              <h3>
+                Técnico de levantamiento y análisis de operaciones estadísticas
+              </h3>
+              <p>
+                Levantamiento, actualización y monitoreo de operaciones
+                estadísticas y registros administrativos de las instituciones
+                del SEN.
+              </p>
+              <ul>
+                <li>
+                  Seguimiento y actualización de indicadores de los Objetivos de
+                  Desarrollo Sostenible.
+                </li>
+                <li>
+                  Preparación y limpieza de bases de datos en Excel; creación de
+                  dashboards e informes.
+                </li>
+                <li>
+                  Elaboración de manuales metodológicos y análisis de
+                  consistencia de indicadores para PNPSP, ODS, PEN y END.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="formacion" className="section">
+          <p className="eyebrow" data-reveal>
+            05 / FORMACIÓN ACADÉMICA
+          </p>
+          <SectionHeading description="Formación universitaria y cursos enfocados en convertir fundamentos estadísticos en soluciones aplicadas.">
+            Una base estadística.
+            <br />
+            <em>Aprendizaje continuo.</em>
+          </SectionHeading>
+          <div className="education-main" data-reveal>
+            <span className="date">AGO 2022 — PRESENTE</span>
+            <div>
+              <span className="badge">EN CURSO</span>
+              <h3>
+                Licenciatura en Estadística
+                <br />
+                Mención Socioeconómica
+              </h3>
+              <p>Universidad Autónoma de Santo Domingo (UASD)</p>
+              <p>
+                Estadística descriptiva e inferencial, probabilidad y modelos de
+                regresión.
+              </p>
+            </div>
+          </div>
+          <div className="courses">
+            {[
+              ['Power BI', 'Universidad Dominico Americano'],
+              ['Excel: Power Pivot, DAX y Power Query', 'Udemy'],
+              [
+                'Introducción a las bases de datos',
+                'Instituto Tecnológico de Las Américas (ITLA)',
+              ],
+              [
+                'Ciencia de Datos para la Explotación de Datos',
+                'Escuela Nacional de Estadística · ONE',
+              ],
+            ].map(([name, source], index) => (
+              <div
+                key={name}
+                data-reveal
+                style={{ '--delay': `${(index % 2) * 70}ms` } as CSSProperties}
+              >
+                <h3>{name}</h3>
+                <p>{source}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="section" id="capacidades">
+          <p className="eyebrow" data-reveal>
+            06 / CAPACIDADES
+          </p>
+          <SectionHeading description="Las tecnologías se organizan por lo que permiten diseñar, analizar, gestionar y comunicar.">
+            Herramientas al servicio
+            <br />
+            <em>de una contribución.</em>
+          </SectionHeading>
+          <div className="stack">
+            {capabilities.map(([name, description], index) => (
+              <div
+                key={name}
+                data-reveal
+                style={{ '--delay': `${index * 70}ms` } as CSSProperties}
+              >
+                <h3>{name}</h3>
+                <p>{description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="contacto" className="section contact section-landmark">
+          <p className="eyebrow" data-reveal>
+            07 / CONVERSEMOS
+          </p>
+          <SectionHeading description="Disponible para conversar sobre análisis, estadística, visualización y sistemas de información.">
+            La próxima buena pregunta
+            <br />
+            <em>puede empezar aquí.</em>
+          </SectionHeading>
+          <div className="contact-links" data-reveal>
+            <a href="mailto:randymedinaa5@gmail.com">
+              <span>
+                <SocialIcon type="mail" /> Email
+              </span>
+              randymedinaa5@gmail.com <i aria-hidden="true">↗</i>
+            </a>
+            <a
+              href={github}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Ver GitHub de Randy Medina"
+            >
+              <span>
+                <SocialIcon type="github" /> GitHub
+              </span>
+              randymedina10 <i aria-hidden="true">↗</i>
+            </a>
+            <a
+              href={linkedin}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Ver LinkedIn de Randy Medina"
+            >
+              <span>
+                <SocialIcon type="linkedin" /> LinkedIn
+              </span>
+              randymedinaa5 <i aria-hidden="true">↗</i>
+            </a>
+            <a
+              href="tel:+18295531466"
+              aria-label="Llamar a Randy Medina al +1 829 553 1466"
+            >
+              <span>
+                <SocialIcon type="phone" /> Teléfono
+              </span>
+              +1 829-553-1466 <i aria-hidden="true">↗</i>
+            </a>
+            <div>
+              <span>Ubicación</span>Santo Domingo, República Dominicana
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <span>RANDY A. MEDINA · ANALISTA DE DATOS</span>
+        <span>© 2026 · CURIOSIDAD CON MÉTODO</span>
+      </footer>
+      <button
+        className={'back-to-top' + (showTop ? ' is-visible' : '')}
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        aria-label="Volver arriba"
+      >
+        <ArrowUp aria-hidden="true" size={20} />
+      </button>
+
+      <Dialog
+        open={Boolean(selected)}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
+      >
+        <DialogContent className="case-modal" showCloseButton={false}>
+          {selected && (
+            <>
+              <p className="eyebrow">
+                {selected.status} · {selected.tool}
+              </p>
+              <DialogTitle className="case-title">{selected.title}</DialogTitle>
+              <DialogDescription className="case-description">
+                {selected.desc}
+              </DialogDescription>
+              {selected.image && (
+                // oxlint-disable-next-line next/no-img-element -- Static export uses a local, dimensioned case-study image.
+                <img
+                  src={'/images/' + selected.image}
+                  alt={'Resultados de ' + selected.title}
+                />
+              )}
+              <dl className="case-study-grid">
+                <div>
+                  <dt>Problema</dt>
+                  <dd>{selected.problem}</dd>
+                </div>
+                <div>
+                  <dt>Datos</dt>
+                  <dd>{selected.data}</dd>
+                </div>
+                <div>
+                  <dt>Método</dt>
+                  <dd>{selected.method}</dd>
+                </div>
+                <div>
+                  <dt>Resultado</dt>
+                  <dd>{selected.result}</dd>
+                </div>
+                <div>
+                  <dt>Tecnologías</dt>
+                  <dd>{selected.technologies}</dd>
+                </div>
+              </dl>
+              <div className="project-links">
+                <a
+                  className="text-link"
+                  href={github + selected.repo}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Explorar repositorio <i aria-hidden="true">↗</i>
+                </a>
+                <DialogClose className="pill">Cerrar</DialogClose>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
