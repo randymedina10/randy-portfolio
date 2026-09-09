@@ -17,7 +17,7 @@ pnpm build
 La compilación estática se genera en `out/`. Los juegos cargan Python al iniciarse; el portafolio no espera esa descarga.
 
 ## Publicar en Vercel
-Importar este repositorio en Vercel, plan Hobby personal gratuito. Next.js, comando `pnpm build`, salida `out`. No requiere variables de entorno ni base de datos. Los pushes a main activan un nuevo despliegue mediante la integración de GitHub.
+Importar este repositorio en Vercel, plan Hobby personal gratuito. Next.js, comando `pnpm build`, directorio de salida automático de Next.js (sin sobrescribirlo en Vercel). No requiere variables de entorno ni base de datos. Los pushes a main activan un nuevo despliegue mediante la integración de GitHub.
 
 El plan gratuito tiene límites: https://vercel.com/docs/plans/hobby. No se requieren planes de pago, dominios propios, Analytics de pago ni una API de IA.
 
@@ -44,4 +44,5 @@ Pruebas de los motores Python: 8 casos (victoria, empate, movimientos inválidos
 ## Referencias
 Estructura inicial de referencia: https://v0-portfolio-recreate.vercel.app/ . Implementación propia; no incluye su código ni sus proyectos.
 Pyodide: https://pyodide.org/en/stable/usage/quickstart.html . Los juegos dependen de la disponibilidad de jsDelivr para la primera carga; muestran una opción de reintento si falla.
+
 
