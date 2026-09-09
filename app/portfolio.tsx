@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowUp, Mail, Phone } from 'lucide-react';
 import {
   Dialog,
@@ -152,6 +152,8 @@ export default function Portfolio() {
   const [selected, setSelected] = useState<Project | null>(null);
   const [game, setGame] = useState('tres-en-raya');
   const [playing, setPlaying] = useState(false);
+  const [gameSrc, setGameSrc] = useState('');
+  const gameRequest = useRef(0);
   const [activeSection, setActiveSection] = useState('');
   const [showTop, setShowTop] = useState(false);
 
@@ -206,6 +208,28 @@ export default function Portfolio() {
   const filteredProjects = projects.filter(
     (project) => filter === 'Todos' || project.type === filter,
   );
+
+  const startGame = async (gameName: string) => {
+    const request = ++gameRequest.current;
+    const directory = '/games/' + gameName;
+    const htmlUrl = directory + '/index.html';
+    let resolvedUrl = htmlUrl;
+
+    setPlaying(true);
+    setGameSrc('');
+    try {
+      const response = await fetch(htmlUrl, {
+        method: 'HEAD',
+        cache: 'no-store',
+      });
+      if (!response.ok) resolvedUrl = directory + '/index';
+    } catch {
+      // Static hosts that preserve .html use the original URL.
+    }
+
+    if (request === gameRequest.current) setGameSrc(resolvedUrl);
+  };
+
   return (
     <>
       <a className="skip" href="#contenido">
@@ -360,8 +384,10 @@ export default function Portfolio() {
               className="portfolio-tabs"
               value={game}
               onValueChange={(value) => {
+                gameRequest.current += 1;
                 setGame(String(value));
                 setPlaying(false);
+                setGameSrc('');
               }}
             >
               <TabsList className="game-tabs">
@@ -405,14 +431,14 @@ export default function Portfolio() {
                       </div>
                     </div>
                     <div className="game-stage">
-                      {playing && currentGame === game ? (
+                      {playing && currentGame === game && gameSrc ? (
                         <iframe
                           title={
                             currentGame === 'tetris'
                               ? 'Jugar Tetris'
                               : 'Jugar tres en raya'
                           }
-                          src={'/games/' + currentGame + '/game.html'}
+                          src={gameSrc}
                           className={
                             currentGame === 'tetris'
                               ? 'tetris-frame'
@@ -426,12 +452,15 @@ export default function Portfolio() {
                           </span>
                           <button
                             className="primary"
-                            onClick={() => setPlaying(true)}
+                            disabled={playing && currentGame === game}
+                            onClick={() => void startGame(currentGame)}
                           >
-                            Jugar{' '}
-                            {currentGame === 'tetris'
-                              ? 'Tetris'
-                              : 'tres en raya'}
+                            {playing && currentGame === game
+                              ? 'Preparando juego…'
+                              : 'Jugar ' +
+                                (currentGame === 'tetris'
+                                  ? 'Tetris'
+                                  : 'tres en raya')}
                           </button>
                           <small>
                             El juego se ejecuta localmente en tu navegador.
