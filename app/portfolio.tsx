@@ -412,7 +412,7 @@ export default function Portfolio() {
                               ? 'Jugar Tetris'
                               : 'Jugar tres en raya'
                           }
-                          src={'/games/' + currentGame + '/index.html'}
+                          src={'/games/' + currentGame + '/game.html'}
                           className={
                             currentGame === 'tetris'
                               ? 'tetris-frame'
