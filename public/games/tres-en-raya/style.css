@@ -43,6 +43,50 @@ button:disabled {
   margin-bottom: 12px;
   color: #c6f36b;
 }
+.game-settings {
+  width: min(100%, 360px);
+  margin: 0 auto 14px;
+  padding: 12px;
+  border: 1px solid #35514b;
+  border-radius: 6px;
+  background: #0c2523;
+  text-align: left;
+}
+.game-settings,
+#computer-settings {
+  display: grid;
+  gap: 9px;
+}
+#computer-settings {
+  grid-template-columns: 1fr 1fr;
+}
+.game-settings label {
+  display: grid;
+  gap: 4px;
+  color: #a8b8b3;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.game-settings select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid #35514b;
+  border-radius: 4px;
+  background: #12302e;
+  color: #f2f0e9;
+  padding: 7px 9px;
+  font: 14px Arial;
+  text-transform: none;
+}
+.game-settings select:focus-visible {
+  outline: 2px solid #c6f36b;
+  outline-offset: 2px;
+}
+.game-settings.is-local #computer-settings {
+  display: none;
+}
 #board {
   margin: 0 auto 15px;
   display: grid;
@@ -89,6 +133,11 @@ body[data-game='tetris'] #board {
 }
 #retry[hidden] {
   display: none;
+}
+@media (max-width: 360px) {
+  #computer-settings {
+    grid-template-columns: 1fr;
+  }
 }
 .score {
   color: #a8b8b3;

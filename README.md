@@ -5,7 +5,7 @@ Portafolio personal de análisis de datos, estadística y programación. Diseño
 ## Contenido
 
 - Cinco casos: Power BI, Excel, SQL, regresión en R y modelos predictivos en Python.
-- Tres en raya y Tetris con motores originales en Python y adaptaciones JavaScript ejecutadas en Web Workers para una demo inmediata y sin dependencias externas.
+- Tres en raya —con modo local y rival computarizado en tres dificultades— y Tetris, ejecutados mediante Web Workers para una demo inmediata y sin dependencias externas.
 - Trayectoria, formación, herramientas y contacto profesional.
 
 ## Desarrollo

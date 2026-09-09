@@ -11,12 +11,36 @@
     <div id="status" class="status" role="status" aria-live="polite">
       Preparando juego…
     </div>
+    <div class="game-settings" aria-label="Configuración de la partida">
+      <label>
+        Modo
+        <select id="mode">
+          <option value="computer">Contra la computadora</option>
+          <option value="local">Dos jugadores</option>
+        </select>
+      </label>
+      <div id="computer-settings">
+        <label>
+          Dificultad
+          <select id="difficulty">
+            <option value="easy">Fácil</option>
+            <option value="medium" selected>Media</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </label>
+        <label>
+          Tu ficha
+          <select id="human-symbol">
+            <option value="X">X · juegas primero</option>
+            <option value="O">O · juega primero la computadora</option>
+          </select>
+        </label>
+      </div>
+    </div>
     <div id="board" role="group" aria-label="Tablero de juego"></div>
     <button id="reset" disabled>Nueva partida</button
     ><button id="retry" hidden>Reintentar carga</button>
-    <p class="hint">
-      Dos jugadores locales · X comienza · Completa una línea de tres.
-    </p>
+    <p class="hint" id="hint">Configura la partida y completa una línea de tres.</p>
     <script src="app.js" defer></script>
   </body>
 </html>

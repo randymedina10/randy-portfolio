@@ -3,7 +3,12 @@ const kind = document.body.dataset.game;
 const statusEl = document.getElementById('status'),
   board = document.getElementById('board'),
   reset = document.getElementById('reset'),
-  retry = document.getElementById('retry');
+  retry = document.getElementById('retry'),
+  modeEl = document.getElementById('mode'),
+  difficultyEl = document.getElementById('difficulty'),
+  humanEl = document.getElementById('human-symbol'),
+  settingsEl = document.querySelector('.game-settings'),
+  hintEl = document.getElementById('hint');
 const colors = [
   '#081C1C',
   '#B8E86B',
@@ -18,6 +23,7 @@ let worker,
   ready = false,
   state = null,
   timer,
+  computerTimer,
   seq = 0,
   busy = false;
 const pending = new Map();
@@ -41,14 +47,24 @@ function render(s) {
   state = s;
   reset.disabled = false;
   if (kind === 'tres-en-raya') {
+    const computerTurn =
+      s.mode === 'computer' && s.turn === s.computer && !s.winner && !s.draw;
     statusEl.textContent = s.winner
-      ? 'Gana ' + s.winner
+      ? s.mode === 'computer'
+        ? s.winner === s.human
+          ? '¡Ganaste!'
+          : 'Gana la computadora. ¿Revancha?'
+        : 'Gana ' + s.winner
       : s.draw
         ? 'Empate. ¿Otra partida?'
-        : 'Turno de ' + s.turn;
+        : computerTurn
+          ? 'La computadora está pensando…'
+          : s.mode === 'computer'
+            ? 'Tu turno (' + s.human + ')'
+            : 'Turno de ' + s.turn;
     [...board.children].forEach((b, i) => {
       b.textContent = s.board[i];
-      b.disabled = !!(s.board[i] || s.winner || s.draw);
+      b.disabled = !!(s.board[i] || s.winner || s.draw || computerTurn);
       b.classList.toggle('winner', s.winning_line?.includes(i));
       b.setAttribute(
         'aria-label',
@@ -60,6 +76,18 @@ function render(s) {
           (s.board[i] || 'vacía'),
       );
     });
+    settingsEl?.classList.toggle('is-local', s.mode === 'local');
+    if (hintEl)
+      hintEl.textContent =
+        s.mode === 'computer'
+          ? 'Juegas con ' +
+            s.human +
+            ' · Dificultad ' +
+            ({ easy: 'fácil', medium: 'media', hard: 'difícil' }[
+              s.difficulty
+            ] || s.difficulty) +
+            ' · Completa una línea de tres.'
+          : 'Dos jugadores locales · X comienza · Completa una línea de tres.';
   } else {
     statusEl.textContent = s.over
       ? 'Fin de la partida'
@@ -98,6 +126,30 @@ function render(s) {
       );
   }
 }
+
+function gameOptions() {
+  return {
+    mode: modeEl?.value || 'local',
+    difficulty: difficultyEl?.value || 'medium',
+    human: humanEl?.value || 'X',
+  };
+}
+
+function scheduleComputerMove(s) {
+  clearTimeout(computerTimer);
+  if (
+    kind === 'tres-en-raya' &&
+    s?.mode === 'computer' &&
+    s.turn === s.computer &&
+    !s.winner &&
+    !s.draw
+  )
+    computerTimer = setTimeout(
+      () => act({ type: 'computer_move' }),
+      360,
+    );
+}
+
 async function act(message) {
   if (busy) return null;
   busy = true;
@@ -120,6 +172,7 @@ function setup() {
   statusEl.textContent = 'Preparando juego…';
   worker?.terminate();
   clearTimeout(timer);
+  clearTimeout(computerTimer);
   for (const p of pending.values()) {
     clearTimeout(p.timeout);
     p.reject(new Error('Juego reiniciado'));
@@ -144,19 +197,27 @@ function setup() {
     retry.hidden = false;
     ready = false;
   };
-  send({ type: 'init', kind }).catch(() => {
-    statusEl.textContent = 'No se pudo preparar el juego. Reintenta.';
-    retry.hidden = false;
-  });
+  send({ type: 'init', kind, options: gameOptions() })
+    .then(scheduleComputerMove)
+    .catch(() => {
+      statusEl.textContent = 'No se pudo preparar el juego. Reintenta.';
+      retry.hidden = false;
+    });
 }
 if (kind === 'tres-en-raya') {
   for (let i = 0; i < 9; i++) {
     const b = document.createElement('button');
     b.disabled = true;
     b.setAttribute('aria-label', 'Casilla ' + (i + 1));
-    b.addEventListener('click', () => act({ type: 'move', cell: i }));
+    b.addEventListener('click', async () => {
+      const nextState = await act({ type: 'move', cell: i });
+      scheduleComputerMove(nextState);
+    });
     board.append(b);
   }
+  [modeEl, difficultyEl, humanEl].forEach((control) =>
+    control?.addEventListener('change', setup),
+  );
 } else {
   for (let i = 0; i < 200; i++) {
     const c = document.createElement('span');
@@ -197,11 +258,15 @@ if (kind === 'tres-en-raya') {
       act({ type: 'action', action: 'pause' });
   });
 }
-reset.addEventListener('click', () => act({ type: 'reset' }));
+reset.addEventListener('click', async () => {
+  const nextState = await act({ type: 'reset', options: gameOptions() });
+  scheduleComputerMove(nextState);
+});
 retry.addEventListener('click', setup);
 window.addEventListener('pagehide', () => {
   worker?.terminate();
   clearTimeout(timer);
+  clearTimeout(computerTimer);
 });
 setup();
 if (document.modelContext?.registerTool) {
@@ -224,7 +289,7 @@ if (document.modelContext?.registerTool) {
   register({
     name: 'play_game_action',
     description:
-      'Aplica un movimiento al juego local visible. reset reinicia la partida.',
+      'Aplica un movimiento al juego visible. reset reinicia la partida.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -237,7 +302,14 @@ if (document.modelContext?.registerTool) {
     execute: async (input) => {
       if (!input || typeof input.action !== 'string')
         throw new Error('Acción requerida');
-      if (input.action === 'reset') return send({ type: 'reset' });
+      if (input.action === 'reset') {
+        const resetState = await send({
+          type: 'reset',
+          options: gameOptions(),
+        });
+        scheduleComputerMove(resetState);
+        return resetState;
+      }
       if (kind === 'tres-en-raya') {
         if (
           input.action !== 'move' ||
@@ -246,7 +318,9 @@ if (document.modelContext?.registerTool) {
           input.cell > 8
         )
           throw new Error('Movimiento inválido');
-        return send({ type: 'move', cell: input.cell });
+        const nextState = await send({ type: 'move', cell: input.cell });
+        scheduleComputerMove(nextState);
+        return nextState;
       }
       if (
         !['left', 'right', 'down', 'rotate', 'drop', 'pause'].includes(

@@ -409,7 +409,7 @@ export default function Portfolio() {
                       <p>
                         {currentGame === 'tetris'
                           ? 'Siete piezas, líneas que desaparecen y una partida que acelera. Mueve, gira y encaja cada bloque.'
-                          : 'Dos jugadores en el mismo dispositivo. Alterna X y O para completar una fila, columna o diagonal.'}
+                          : 'Juega con otra persona o reta a la computadora. Elige tu ficha y completa una fila, columna o diagonal.'}
                       </p>
                       <a
                         className="text-link"
@@ -427,7 +427,7 @@ export default function Portfolio() {
                       <div className="game-notes">
                         {currentGame === 'tetris'
                           ? 'Teclado: flechas para mover y girar · espacio para caída rápida · P para pausar. Controles táctiles incluidos.'
-                          : 'El tablero alterna turnos, detecta las ocho combinaciones ganadoras y los empates, y se bloquea al terminar.'}
+                          : 'Tres niveles: fácil para practicar, medio con táctica y difícil con Minimax. También conserva el modo de dos jugadores.'}
                       </div>
                     </div>
                     <div className="game-stage">
