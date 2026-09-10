@@ -535,6 +535,19 @@ h3 {
   border-top: 1px solid var(--border);
   padding-top: 24px;
 }
+.game-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+.game-tech span {
+  border: 1px solid #c6f36b52;
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: var(--primary);
+  font: 12px/1.4 monospace;
+}
 .game-stage {
   display: grid;
   min-height: 350px;
@@ -591,20 +604,85 @@ h3 {
   border-top: 1px solid var(--border);
   padding-top: 38px;
 }
+.timeline {
+  position: relative;
+  gap: 56px;
+  border: 1px solid var(--border);
+  padding: 38px;
+  background: linear-gradient(120deg, #c6f36b0b, transparent 42%), var(--card);
+}
+.timeline::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--primary);
+  content: '';
+}
 .date {
   color: var(--muted-foreground);
   font: 13px/1.8 monospace;
 }
-.timeline p,
-.timeline li,
-.education-main p {
-  color: var(--muted-foreground);
+.experience-meta {
+  align-self: start;
 }
-.timeline li {
+.experience-meta .date {
+  color: var(--foreground);
+}
+.experience-current {
+  display: inline-block;
+  margin: 20px 0 16px;
+  border: 1px solid #c6f36b52;
+  padding: 5px 9px;
+  color: var(--primary);
+  font: 11px/1.4 monospace;
+}
+.experience-meta p {
+  max-width: 190px;
+  color: var(--muted-foreground);
+  font-size: 14px;
+}
+.experience-role > .eyebrow {
   margin-bottom: 12px;
 }
-.timeline ul {
-  padding-left: 20px;
+.role-lead {
+  max-width: 760px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 28px;
+  font-size: 17px;
+}
+.experience-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.experience-list li {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 10px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 18px 0;
+}
+.experience-list li:last-child {
+  grid-column: 1 / -1;
+}
+.experience-list span {
+  color: var(--primary);
+  font: 12px/1.7 monospace;
+}
+.experience-list p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.timeline p,
+.education-main p {
+  color: var(--muted-foreground);
 }
 .timeline h3,
 .education-main h3 {
@@ -736,6 +814,44 @@ footer {
   margin: 0;
   color: var(--muted-foreground);
   line-height: 1.65;
+}
+.er-figure {
+  margin: 4px 0 28px;
+  border-top: 1px solid var(--border);
+  padding-top: 24px;
+}
+.er-diagram {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  background: #061716;
+}
+.er-relations line {
+  stroke: #69817b;
+  stroke-width: 2;
+}
+.er-node rect {
+  fill: #12302e;
+  stroke: #49635d;
+  stroke-width: 1.5;
+}
+.er-node.is-primary rect {
+  fill: #1b4038;
+  stroke: var(--primary);
+}
+.er-node text {
+  fill: var(--foreground);
+  font: 13px monospace;
+}
+.er-node.is-primary text {
+  fill: var(--primary);
+}
+.er-figure figcaption {
+  margin-top: 10px;
+  color: var(--muted-foreground);
+  font: 12px/1.5 monospace;
+  text-align: right;
 }
 .back-to-top {
   position: fixed;
@@ -908,6 +1024,18 @@ footer {
   .education-main {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+  .timeline {
+    padding: 28px 24px;
+  }
+  .experience-meta p {
+    max-width: none;
+  }
+  .experience-list {
+    grid-template-columns: 1fr;
+  }
+  .experience-list li:last-child {
+    grid-column: auto;
   }
   .courses,
   .stack,

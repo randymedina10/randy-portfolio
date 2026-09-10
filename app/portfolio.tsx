@@ -22,6 +22,79 @@ import {
 
 type Project = (typeof projects)[number];
 
+const sqlDiagramNodes = [
+  ['Usuarios', 24, 22],
+  ['Clientes', 24, 106],
+  ['Sucursales', 24, 274],
+  ['Ventas', 220, 106, 'primary'],
+  ['Pagos', 416, 22],
+  ['DetalleVenta', 416, 106, 'primary'],
+  ['Inventario', 220, 274],
+  ['Productos', 612, 106, 'primary'],
+  ['Categorías', 760, 22],
+  ['Descuentos', 760, 106],
+  ['Compras', 612, 274],
+  ['Proveedores', 760, 274],
+] as const;
+
+const sqlDiagramRelations = [
+  [164, 44, 220, 128],
+  [164, 128, 220, 128],
+  [164, 296, 220, 146],
+  [360, 128, 416, 44],
+  [360, 128, 416, 128],
+  [556, 128, 612, 128],
+  [164, 296, 220, 296],
+  [360, 296, 612, 146],
+  [682, 106, 830, 66],
+  [752, 128, 760, 128],
+  [682, 274, 682, 150],
+  [752, 296, 760, 296],
+] as const;
+
+function SqlRelationshipDiagram() {
+  return (
+    <figure className="er-figure">
+      <svg
+        className="er-diagram"
+        viewBox="0 0 900 350"
+        aria-labelledby="er-title er-description"
+      >
+        <title id="er-title">
+          Diagrama entidad-relación del sistema de ventas
+        </title>
+        <desc id="er-description">
+          Doce tablas conectan usuarios, clientes, ventas, pagos, detalle,
+          productos, categorías, inventario, sucursales, compras, proveedores y
+          descuentos.
+        </desc>
+        <g className="er-relations" aria-hidden="true">
+          {sqlDiagramRelations.map(([x1, y1, x2, y2], index) => (
+            <line key={index} x1={x1} y1={y1} x2={x2} y2={y2} />
+          ))}
+        </g>
+        <g>
+          {sqlDiagramNodes.map(([name, x, y, variant]) => (
+            <g
+              className={
+                variant === 'primary' ? 'er-node is-primary' : 'er-node'
+              }
+              key={name}
+              transform={`translate(${x} ${y})`}
+            >
+              <rect width="140" height="44" rx="5" />
+              <text x="70" y="27" textAnchor="middle">
+                {name}
+              </text>
+            </g>
+          ))}
+        </g>
+      </svg>
+      <figcaption>12 tablas · 12 relaciones con claves foráneas</figcaption>
+    </figure>
+  );
+}
+
 function SectionHeading({
   children,
   description,
@@ -181,6 +254,10 @@ export default function Portfolio() {
       revealItems.forEach((item) => revealObserver?.observe(item));
     }
 
+    return () => revealObserver?.disconnect();
+  }, [filter]);
+
+  useEffect(() => {
     const sections = navItems
       .map(([, id]) => document.getElementById(id))
       .filter((item): item is HTMLElement => Boolean(item));
@@ -199,7 +276,6 @@ export default function Portfolio() {
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
-      revealObserver?.disconnect();
       sectionObserver.disconnect();
       window.removeEventListener('scroll', onScroll);
     };
@@ -344,7 +420,7 @@ export default function Portfolio() {
           <SectionHeading description="Análisis, visualizaciones y código. Cada caso permite revisar el problema, los datos, el método y el resultado.">
             Preguntas concretas.
             <br />
-            <em>Proyectos abiertos.</em>
+            <em>Resultados verificables.</em>
           </SectionHeading>
           <div className="filters" aria-label="Filtrar proyectos" data-reveal>
             {['Todos', ...areas.map((area) => area[0])].map((name) => (
@@ -374,7 +450,7 @@ export default function Portfolio() {
           <p className="eyebrow" data-reveal>
             03 / LABORATORIO
           </p>
-          <SectionHeading description="Dos motores diseñados en Python y adaptados a JavaScript para jugar directamente en el navegador.">
+          <SectionHeading description="Dos proyectos de lógica desarrollados originalmente en Python y adaptados a JavaScript para ejecutarse directamente en el navegador.">
             También se aprende
             <br />
             <em>jugando.</em>
@@ -424,6 +500,26 @@ export default function Portfolio() {
                       >
                         Ver código en GitHub <i aria-hidden="true">↗</i>
                       </a>
+                      <div
+                        className="game-tech"
+                        aria-label="Conceptos técnicos del proyecto"
+                      >
+                        {(currentGame === 'tetris'
+                          ? [
+                              'Matrices',
+                              'Detección de colisiones',
+                              'Gestión de estados',
+                              'Dificultad progresiva',
+                            ]
+                          : [
+                              'Minimax',
+                              'Árbol de decisiones',
+                              'Estados del juego',
+                            ]
+                        ).map((concept) => (
+                          <span key={concept}>{concept}</span>
+                        ))}
+                      </div>
                       <div className="game-notes">
                         {currentGame === 'tetris'
                           ? 'Teclado: flechas para mover y girar · espacio para caída rápida · P para pausar. Controles táctiles incluidos.'
@@ -485,31 +581,78 @@ export default function Portfolio() {
             <em>responsabilidad.</em>
           </SectionHeading>
           <div className="timeline" data-reveal>
-            <div className="date">MAR 2025 — PRESENTE</div>
-            <div>
+            <aside className="experience-meta">
+              <div className="date">MAR 2025 — PRESENTE</div>
+              <span className="experience-current">POSICIÓN ACTUAL</span>
+              <p>
+                Sistema Estadístico Nacional · Indicadores · Calidad del dato
+              </p>
+            </aside>
+            <div className="experience-role">
               <p className="eyebrow">OFICINA NACIONAL DE ESTADÍSTICA</p>
               <h3>
                 Técnico de levantamiento y análisis de operaciones estadísticas
               </h3>
-              <p>
-                Levantamiento, actualización y monitoreo de operaciones
-                estadísticas y registros administrativos de las instituciones
-                del SEN.
+              <p className="role-lead">
+                Trabajo técnico con operaciones estadísticas, registros
+                administrativos e indicadores nacionales: desde el levantamiento
+                y la limpieza hasta la documentación y presentación de
+                resultados.
               </p>
-              <ul>
+              <ol className="experience-list">
                 <li>
-                  Seguimiento y actualización de indicadores de los Objetivos de
-                  Desarrollo Sostenible.
+                  <span>01</span>
+                  <p>
+                    Levantamiento, actualización y monitoreo de operaciones
+                    estadísticas y registros administrativos de las
+                    instituciones que conforman el Sistema Estadístico Nacional
+                    (SEN).
+                  </p>
                 </li>
                 <li>
-                  Preparación y limpieza de bases de datos en Excel; creación de
-                  dashboards e informes.
+                  <span>02</span>
+                  <p>
+                    Monitoreo y evaluación de los indicadores país de los
+                    Objetivos de Desarrollo Sostenible (ODS), así como su
+                    actualización periódica.
+                  </p>
                 </li>
                 <li>
-                  Elaboración de manuales metodológicos y análisis de
-                  consistencia de indicadores para PNPSP, ODS, PEN y END.
+                  <span>03</span>
+                  <p>
+                    Manejo de bases de datos de los diferentes inventarios del
+                    departamento.
+                  </p>
                 </li>
-              </ul>
+                <li>
+                  <span>04</span>
+                  <p>
+                    Creación de dashboards informativos para la presentación de
+                    indicadores.
+                  </p>
+                </li>
+                <li>
+                  <span>05</span>
+                  <p>
+                    Preparación, limpieza y presentación de bases de datos en
+                    Excel.
+                  </p>
+                </li>
+                <li>
+                  <span>06</span>
+                  <p>
+                    Creación de informes, manuales metodológicos y manuales de
+                    uso, de acuerdo con las necesidades del departamento.
+                  </p>
+                </li>
+                <li>
+                  <span>07</span>
+                  <p>
+                    Análisis de factibilidad y consistencia de indicadores de
+                    demanda (PNPSP, ODS, PEN y END).
+                  </p>
+                </li>
+              </ol>
             </div>
           </div>
         </section>
@@ -690,14 +833,25 @@ export default function Portfolio() {
                   <dd>{selected.method}</dd>
                 </div>
                 <div>
-                  <dt>Resultado</dt>
-                  <dd>{selected.result}</dd>
+                  <dt>Hallazgo</dt>
+                  <dd>{selected.finding}</dd>
+                </div>
+                <div>
+                  <dt>Entregable</dt>
+                  <dd>{selected.deliverable}</dd>
+                </div>
+                <div>
+                  <dt>Limitación</dt>
+                  <dd>{selected.limitation}</dd>
                 </div>
                 <div>
                   <dt>Tecnologías</dt>
                   <dd>{selected.technologies}</dd>
                 </div>
               </dl>
+              {'diagram' in selected && selected.diagram && (
+                <SqlRelationshipDiagram />
+              )}
               <div className="project-links">
                 <a
                   className="text-link"

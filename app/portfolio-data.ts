@@ -27,14 +27,22 @@ export const projects = [
     repo: 'analisis-rrhh-power-bi',
     type: 'Business Intelligence',
     status: 'Caso de portafolio',
-    metrics: ['Power Query', 'DAX', 'RR. HH.'],
+    metrics: [
+      '1.417 empleados',
+      '16,3 % de rotación',
+      '84 bajas en Administración',
+    ],
     problem:
       'Entender qué perfiles, departamentos y condiciones aparecen con mayor frecuencia en la rotación.',
     data: 'Datos de recursos humanos de una empresa farmacéutica en India.',
     method:
       'Preparación en Power Query, medidas DAX y un dashboard segmentado por departamento, salario, edad y rol.',
-    result:
-      'Una vista interactiva para explorar patrones de rotación sin atribuir impacto empresarial no medido.',
+    finding:
+      'Administración concentra 84 de las 231 bajas observadas (36 %), seguida de Ventas con 52 (23 %).',
+    deliverable:
+      'Dashboard interactivo con 1.417 empleados analizados y segmentación por departamento, edad, salario y rol.',
+    limitation:
+      'Las diferencias observadas describen asociaciones en este conjunto de datos; no demuestran causalidad ni impacto empresarial.',
     technologies: 'Power BI · Power Query · DAX',
   },
   {
@@ -46,14 +54,22 @@ export const projects = [
     repo: 'dashboard-ventas-excel',
     type: 'Business Intelligence',
     status: 'Caso de portafolio',
-    metrics: ['Tablas dinámicas', 'Segmentadores', 'Ventas'],
+    metrics: [
+      '$1.928.888 en ventas',
+      '$247.961 de ganancia',
+      'Teléfonos: $279.464',
+    ],
     problem:
       'Reunir en una sola lectura el desempeño mensual, territorial y por cliente del negocio.',
     data: 'Registros de ventas, ganancias, clientes, categorías y estados incluidos en el libro del proyecto.',
     method:
       'Tablas dinámicas, gráficos vinculados y segmentadores para navegar los resultados.',
-    result:
-      'Un dashboard que conecta tendencias, categorías, clientes rentables y distribución territorial.',
+    finding:
+      'Teléfonos es la categoría con mayor venta acumulada, con $279.464; diciembre registra el mayor total mensual, con aproximadamente $241 mil.',
+    deliverable:
+      'Dashboard interactivo en Excel con ventas y ganancias, comparación anual, ranking de clientes y distribución territorial.',
+    limitation:
+      'Los resultados describen los registros incluidos en el libro y cambian con los filtros; no estiman causalidad ni ventas futuras.',
     technologies: 'Excel · Tablas dinámicas · Segmentadores',
   },
   {
@@ -71,8 +87,12 @@ export const projects = [
     data: '32 automóviles del conjunto histórico mtcars.',
     method:
       'Modelo OLS, intervalos de confianza al 95 %, análisis de residuos e identificación de observaciones influyentes.',
-    result:
-      'RMSE leave-one-out de 2,78 mpg frente a 6,12 mpg para la referencia basada en la media; asociación no causal.',
+    finding:
+      'El modelo obtiene R² ajustado de 0,815 y RMSE leave-one-out de 2,78 mpg, frente a 6,12 mpg para la referencia basada en la media.',
+    deliverable:
+      'Análisis reproducible con coeficientes, intervalos al 95 %, predicciones, validación y diagnósticos de residuos e influencia.',
+    limitation:
+      'La muestra es pequeña, histórica y no aleatoria. Las asociaciones no son causales ni deben extrapolarse a vehículos actuales.',
     technologies: 'R · Regresión múltiple · Validación leave-one-out',
   },
   {
@@ -84,14 +104,18 @@ export const projects = [
     repo: 'modelos-predictivos-python',
     type: 'Data Analytics',
     status: 'Proyecto reproducible',
-    metrics: ['178 muestras', '13 variables', '45/45 en prueba'],
+    metrics: ['178 muestras', '13 variables', '100 % de exactitud en prueba'],
     problem:
       'Clasificar tres cultivares de vino mediante sus mediciones químicas.',
     data: '178 muestras y 13 variables del conjunto Wine de UCI; 133 para entrenamiento y 45 para prueba.',
     method:
       'Comparación de baseline, regresión logística y random forest con validación cruzada estratificada de cinco particiones.',
-    result:
-      'Random forest alcanzó F1 macro 0,985 en validación y 1,000 en prueba; el conjunto es pequeño y separable.',
+    finding:
+      'Random forest fue el modelo seleccionado: F1 macro de 0,985 en validación cruzada y 100 % de exactitud en las 45 muestras de prueba.',
+    deliverable:
+      'Pipeline reproducible con separación estratificada, comparación de tres modelos, predicciones auditables y matriz de confusión.',
+    limitation:
+      'Wine es un conjunto pequeño y relativamente separable. Una sola partición de prueba no demuestra rendimiento industrial.',
     technologies: 'Python · scikit-learn · Clasificación',
   },
   {
@@ -103,15 +127,20 @@ export const projects = [
     repo: 'sistema-ventas-sql',
     type: 'Data Systems',
     status: 'Proyecto de práctica',
-    metrics: ['Modelo relacional', 'JOIN', 'Agregaciones'],
+    metrics: ['12 tablas', '12 relaciones', '9 consultas'],
     problem:
       'Organizar ventas, inventario, pagos y proveedores sin perder relaciones entre entidades.',
     data: 'Datos de prueba documentados para clientes, productos, sucursales, compras y transacciones.',
     method:
       'Diseño relacional con claves foráneas y consultas de exploración, uniones y agregaciones.',
-    result:
-      'Una base práctica y consultable para analizar operaciones de venta; no se presenta como sistema en producción.',
+    finding:
+      'Las consultas integran inventario por sucursal, ventas por vendedor, unidades por producto, compras y métodos de pago.',
+    deliverable:
+      'Script SQL Server con 12 tablas, 12 claves foráneas, datos de prueba y 9 consultas SELECT con JOIN y agregaciones.',
+    limitation:
+      'Es un esquema educativo con datos ficticios. No incluye seguridad, procedimientos de despliegue ni controles propios de producción.',
     technologies: 'SQL Server · Modelo relacional · Consultas SQL',
+    diagram: true,
   },
 ] as const;
 
@@ -139,7 +168,10 @@ export const areas = [
 ] as const;
 
 export const capabilities = [
-  ['Diseño estadístico', 'Indicadores · metodología · pruebas de hipótesis'],
+  [
+    'Diseño estadístico',
+    'Metodología · indicadores · documentación técnica · limpieza de datos',
+  ],
   ['Análisis y modelado', 'Python · R · regresión · integración de datos'],
   ['Gestión de datos', 'SQL · bases relacionales · control de calidad'],
   [
