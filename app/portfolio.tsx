@@ -649,7 +649,7 @@ export default function Portfolio() {
                   <span>07</span>
                   <p>
                     Análisis de factibilidad y consistencia de indicadores de
-                    demanda (PNPSP, ODS, PEN y END).
+                    demanda (PNPSP, ODS, CMV y END).
                   </p>
                 </li>
               </ol>
